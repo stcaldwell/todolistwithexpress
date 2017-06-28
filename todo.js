@@ -1,7 +1,8 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
+const express = require('express');
+const bodyParser = require('body-parser');
 const mustacheExpress = require('mustache-express');
+const models = require('./models');
+const expressValidator = require('express-validator');
 
 var app = express();
 
@@ -11,24 +12,29 @@ app.set('view engine', 'mustache')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(expressValidator());
 
-const todolist = [
-  {item: "wash car.", status: "checked"},
-];
+// const todolist = [
+//   {item: "wash car.", status: "checked"},
+// ];
+
 
 app.get("/", function (req, res) {
-  res.render('index', { todoList: todolist });
+  models.todotable.findAll().then(function(TodoApp) {
+    res.render('index', {todoList: TodoApp})
+  })
 });
 
 app.post("/", function (req, res) {
-  req.checkBody("todo", "Please enter a valid item.").notEmpty();
-  var error = req.validationErrors();
-  if(error) {
-    res.send(error);
-  }else {
-  todolist.push(req.body.todo);
-  res.redirect('/');}
+  var todolist = models.todotable.build({
+    item: req.body.todo,
+    status: req.body.completed
+  });
+  todolist.save().then(function(newtodo){
+    res.redirect('/')
+  });
+
 });
 
 app.listen(3000, function () {

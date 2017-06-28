@@ -7,11 +7,18 @@
   <body>
     <form action="/" method="post">
       <input type="text" name="todo">
+      <select name="completed">
+        <option value="true">True</option>
+        <option value="false">False</option>
+      </select>
       <input type="submit" value="Add Item">
+
     </form>
     <ul>
     {{#todoList}}
-        <li><input type="checkbox" {{status}}>  {{item}}</li>
+    {{#dataValues}}
+        <li>{{item}}</li>
+        {{/dataValues}}
     {{/todoList}}
   </ul>
   </body>
